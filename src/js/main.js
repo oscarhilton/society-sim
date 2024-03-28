@@ -1,44 +1,32 @@
-import { randomInt } from "./utils";
+import { randomRange } from "@core/utils/helpers";
+import Vector from "@core/math/Vector";
+import Object from "@objects/Object";
 
-const canvas = document.getElementById("canvas"),
-  ctx = canvas.getContext("2d"),
-  mouse = {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  };
+/** @type {HTMLCanvasElement} */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const mouse = {
+  x: window.innerWidth / 2,
+  y: window.innerHeight / 2,
+};
 
 let objects;
-
-class Object {
-  constructor(x, y, radius) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.stroke();
-    ctx.closePath();
-  }
-
-  update() {
-    this.draw();
-  }
-}
 
 function init() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   objects = new Array(10).fill(null).map(() => {
-    const radius = randomInt(5, 15);
-    return new Object(
-      randomInt(radius, window.innerWidth - radius),
-      randomInt(radius, window.innerHeight - radius),
-      radius
+    const radius = randomRange(15, 50);
+    const initialPos = new Vector(
+      randomRange(radius, window.innerWidth - radius),
+      randomRange(radius, window.innerHeight - radius)
     );
+    const velocity = new Vector(
+      Math.random() * 5 - 2.5,
+      Math.random() * 5 - 2.5
+    );
+    return new Object(initialPos, velocity, radius);
   });
 }
 
@@ -46,7 +34,11 @@ function animate() {
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   requestAnimationFrame(animate);
 
-  objects.forEach((object) => object.update());
+  objects.forEach((object) => object.update(ctx));
+
+  ctx.fillText("CANVAS IS READY TO BE USED", mouse.x, mouse.y);
+  ctx.textBaseline = "middle";
+  ctx.font = "16px sans-serif";
 }
 
 window.addEventListener("mousemove", function ({ clientX, clientY }) {
