@@ -9,6 +9,10 @@ export const clamp = (value, min, max) => {
   return Math.min(Math.max(value, min), max);
 };
 
+export const snap = (x, step) => {
+  return Math.round(x / step) * step;
+};
+
 export const randomRange = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };

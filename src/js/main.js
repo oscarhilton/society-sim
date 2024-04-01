@@ -9,36 +9,49 @@ const mouse = {
   x: window.innerWidth / 2,
   y: window.innerHeight / 2,
 };
+const fps = 60;
+const frameDuration = 1000 / fps;
 
+let canvasWidth;
+let canvasHeight;
+let ticker = 0;
+let prevTimestamp = 0;
 let objects;
 
 function init() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvasWidth = canvas.width = window.innerWidth;
+  canvasHeight = canvas.height = window.innerHeight;
 
   objects = new Array(10).fill(null).map(() => {
     const radius = randomRange(15, 50);
     const initialPos = new Vector(
-      randomRange(radius, window.innerWidth - radius),
-      randomRange(radius, window.innerHeight - radius)
+      randomRange(radius, canvasWidth - radius),
+      randomRange(radius, canvasHeight - radius)
     );
     const velocity = new Vector(
       Math.random() * 5 - 2.5,
       Math.random() * 5 - 2.5
     );
-    return new Object(initialPos, velocity, radius);
+    return new Object(ctx, initialPos, velocity, radius);
   });
 }
 
-function animate() {
-  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+function animate(timestamp) {
+  const deltaTime = timestamp - prevTimestamp;
+  prevTimestamp = timestamp;
+
+  if (ticker > frameDuration) {
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    objects.forEach((object) => object.update());
+
+    ctx.fillText("CANVAS IS READY TO BE USED", mouse.x, mouse.y);
+    ctx.textBaseline = "middle";
+    ctx.font = "0.95rem sans-serif";
+    ticker = 0;
+  } else ticker += deltaTime;
+
   requestAnimationFrame(animate);
-
-  objects.forEach((object) => object.update(ctx));
-
-  ctx.fillText("CANVAS IS READY TO BE USED", mouse.x, mouse.y);
-  ctx.textBaseline = "middle";
-  ctx.font = "16px sans-serif";
 }
 
 window.addEventListener("mousemove", function ({ clientX, clientY }) {
@@ -48,5 +61,7 @@ window.addEventListener("mousemove", function ({ clientX, clientY }) {
 
 window.addEventListener("resize", init);
 
-init();
-animate();
+window.addEventListener("load", () => {
+  init();
+  animate(0);
+});
