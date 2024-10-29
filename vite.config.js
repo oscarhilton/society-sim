@@ -21,6 +21,10 @@ export default defineConfig({
         find: "@objects",
         replacement: path.resolve(__dirname, "src/js/objects"),
       },
+      {
+        find: "@logic",
+        replacement: path.resolve(__dirname, "src/js/logic"),
+      },
     ],
   },
 });
