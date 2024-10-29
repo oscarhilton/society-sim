@@ -43,3 +43,4 @@
    ```bash
    npm run dev
    ```
+# society-sim
